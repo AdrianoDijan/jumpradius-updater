@@ -1,0 +1,28 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line_length = 79
+
+[tool.isort]
+line_length = 79
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.poetry]
+name = "jumpradius-updater"
+version = "0.1.0"
+description = "Tool to autoupdate the JumpCloud Radius public IP."
+authors = ["Adriano Dijan <adriano.dijan1@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+envparse = "^0.2.0"
+requests = "^2.28.1"
+structlog = "^22.1.0"
+structlog-pretty = "^0.3.0"
+rich = "^12.5.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"

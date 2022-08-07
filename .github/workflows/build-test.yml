@@ -1,0 +1,74 @@
+name: Create and publish a Docker image
+
+on: push
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - uses: pre-commit/action@v3.0.0
+      env:
+        SKIP: no-commit-to-branch
+
+  build-push:
+    runs-on: ubuntu-latest
+    needs: [pre-commit]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=sha
+          type=sha,format=long
+          type=ref,event=branch
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+
+    - name: Build and export to Docker
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        load: true
+        tags: ${{ steps.meta.outputs.tags }}
+
+    - id: lowercase
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ env.IMAGE_NAME }}
+
+    - name: Check types (mypy)
+      run: >-
+        docker run --rm ${{ env.REGISTRY }}/${{ steps.lowercase.outputs.lowercase }}:sha-${{ github.sha }}
+        sh -c "pip install mypy &&
+        mypy --install-types --non-interactive /app/jumpradius_updater"
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}

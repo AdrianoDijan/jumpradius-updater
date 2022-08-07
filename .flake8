@@ -1,0 +1,5 @@
+[flake8]
+exclude = setup.py,alembic/versions,tests
+max-complexity = 10
+docstring-convention=google
+ignore=D100,D101,D104,E501
