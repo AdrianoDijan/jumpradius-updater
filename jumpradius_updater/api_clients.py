@@ -1,7 +1,4 @@
-from typing import Any
-
 import requests
-from requests.exceptions import HTTPError
 
 from .constants import HTTPMethod
 from .settings import (
@@ -44,14 +41,32 @@ def send_api_request(
 
     try:
         response.raise_for_status()
-        return response.json()
-    except HTTPError as e:
-        logger.error(
-            "jumpradius.api_client.base_client", url=url, error=str(e)
-        )
-        return None
+        retval = response.json()
+        return retval
     except ValueError:
-        return response.text
+        retval = response.text
+        return retval
+    except Exception:
+        logger.exception(
+            "jumpradius.api_clients.send_api_request",
+            host=base,
+            path=path,
+            url=url,
+            status_code=response.status_code,
+            body=body,
+        )
+        retval = None
+        return retval
+    finally:
+        logger.debug(
+            "jumpradius.api_clients.send_api_request",
+            host=base,
+            path=path,
+            url=url,
+            status_code=response.status_code,
+            body=body,
+            response=retval,
+        )
 
 
 def get_radius_servers() -> dict | None:
@@ -75,7 +90,7 @@ def get_radius_servers() -> dict | None:
 
 def update_server_ip(
     server_id: str, name: str, secret: str, source_ip: str
-) -> Any:
+) -> None:
     """Get all radius servers from the API.
 
     Returns:
@@ -86,7 +101,7 @@ def update_server_ip(
         "networkSourceIp": source_ip,
         "sharedSecret": secret,
     }
-    response = send_api_request(
+    send_api_request(
         method=HTTPMethod.PUT,
         base=JUMPRADIUS_API_BASE,
         path=f"radiusservers/{server_id}",
@@ -94,15 +109,6 @@ def update_server_ip(
         body=body,
         headers={"x-api-key": JUMPRADIUS_API_KEY},
     )
-
-    if response:
-        logger.info(
-            "jumpradius_updater.api_clients.update_server_ip",
-            status="success",
-            response=response,
-        )
-
-    return response
 
 
 def get_current_ip() -> str | None:
@@ -118,11 +124,6 @@ def get_current_ip() -> str | None:
     )
 
     if response and isinstance(response, dict):
-        logger.info(
-            "jumpradius_updater.api_clients.get_current_ip",
-            status="success",
-            response=response,
-        )
         return response["ip"]
 
     return None

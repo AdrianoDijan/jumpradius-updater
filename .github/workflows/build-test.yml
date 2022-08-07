@@ -51,6 +51,7 @@ jobs:
           type=sha
           type=sha,format=long
           type=ref,event=branch
+          type=ref,event=tag
           type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
 
     - name: Build and export to Docker

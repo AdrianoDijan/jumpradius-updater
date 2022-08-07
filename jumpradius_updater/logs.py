@@ -5,7 +5,9 @@ import structlog_pretty
 from structlog.stdlib import _NAME_TO_LEVEL
 
 
-def get_logger(app_name, process_name=None, log_level="notset", log_for=""):
+def get_logger(
+    app_name, process_name=None, log_level="notset", log_for=""
+) -> structlog.BoundLogger:
     """Configure and return logger."""
     configure_structlog(app_name, process_name, log_level, log_for)
     return structlog.get_logger()
