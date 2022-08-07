@@ -7,7 +7,7 @@ from structlog.stdlib import _NAME_TO_LEVEL
 
 def get_logger(
     app_name, process_name=None, log_level="notset", log_for=""
-) -> structlog.BoundLogger:
+) -> structlog.stdlib.BoundLogger:
     """Configure and return logger."""
     configure_structlog(app_name, process_name, log_level, log_for)
     return structlog.get_logger()

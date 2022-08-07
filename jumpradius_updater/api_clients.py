@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import JSONDecodeError
 
 from .constants import HTTPMethod
 from .settings import (
@@ -31,19 +32,19 @@ def send_api_request(
         dict | str | int | bytes | None: response
     """
     url = f"{base}{path}"
-    response = requests.request(
-        url=url,
-        method=method,
-        headers=headers,
-        data=body if not json else None,
-        json=body if json else None,
-    )
-
+    status_code = None
     try:
-        response.raise_for_status()
+        response = requests.request(
+            url=url,
+            method=method,
+            headers=headers,
+            data=body if not json else None,
+            json=body if json else None,
+        )
+        status_code = response.status_code
         retval = response.json()
         return retval
-    except ValueError:
+    except JSONDecodeError:
         retval = response.text
         return retval
     except Exception:
@@ -52,7 +53,7 @@ def send_api_request(
             host=base,
             path=path,
             url=url,
-            status_code=response.status_code,
+            status_code=status_code,
             body=body,
         )
         retval = None
@@ -63,7 +64,7 @@ def send_api_request(
             host=base,
             path=path,
             url=url,
-            status_code=response.status_code,
+            status_code=status_code,
             body=body,
             response=retval,
         )

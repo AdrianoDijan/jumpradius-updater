@@ -12,7 +12,10 @@ IFCONFIG_CO_API_BASE = env.str(
     "IFCONFIG_CO_API_BASE", default="https://ifconfig.co/"
 )
 
-REFRESH_RATE_SEC = env.int("REFRESH_RATE_SEC", default=10)
+IP_REFRESH_RATE_SEC = env.int("IP_REFRESH_RATE_SEC", default=10)
+
+# refresh servers data every x IP refreshes
+SERVERS_REFRESH_MULTIPLIER = env.int("SERVERS_REFRESH_MULTIPLIER", default=6)
 
 RADIUS_SERVER_NAMES = env.list("RADIUS_SERVER_NAMES", default=[])
 RADIUS_SERVER_IDS = env.list("RADIUS_SERVER_IDS", default=[])

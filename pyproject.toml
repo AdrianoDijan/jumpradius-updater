@@ -12,7 +12,7 @@ include_trailing_comma = true
 
 [tool.poetry]
 name = "jumpradius-updater"
-version = "0.1.1"
+version = "0.1.2"
 description = "Tool to autoupdate the JumpCloud Radius public IP."
 authors = ["Adriano Dijan <adriano.dijan1@gmail.com>"]
 
@@ -26,3 +26,4 @@ rich = "^12.5.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
+mypy = "^0.971"
