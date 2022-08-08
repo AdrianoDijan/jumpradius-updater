@@ -1,15 +1,16 @@
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 from time import sleep
 
 from .api_clients import get_current_ip
+from .logs import logger
 from .models import RadiusServer, ServerFilters
 from .settings import (
+    APP_NAME,
     IP_REFRESH_RATE_SEC,
     RADIUS_SERVER_IDS,
     RADIUS_SERVER_NAMES,
     SERVERS_REFRESH_MULTIPLIER,
-    logger,
 )
 
 
@@ -20,9 +21,7 @@ def _get_current_ip() -> str:
         str: current IP address
     """
     while not (current_ip := get_current_ip()):
-        logger.error(
-            "jumpradius_updater.get_initial_ip", delay=IP_REFRESH_RATE_SEC
-        )
+        logger.error(f"{APP_NAME}.get_initial_ip", delay=IP_REFRESH_RATE_SEC)
         sleep(IP_REFRESH_RATE_SEC)
 
     return current_ip
@@ -42,7 +41,7 @@ def loop():
             for server in servers:
                 if current_ip != server.source_ip:
                     logger.info(
-                        "jumpradius.updater.ip_change",
+                        f"{APP_NAME}.updater.ip_change",
                         current_ip=server.source_ip,
                         new_ip=current_ip,
                     )

@@ -4,6 +4,8 @@ import structlog
 import structlog_pretty
 from structlog.stdlib import _NAME_TO_LEVEL
 
+from .settings import APP_NAME, LOG_FOR
+
 
 def get_logger(
     app_name, process_name=None, log_level="notset", log_for=""
@@ -102,3 +104,6 @@ def filter_by_level(log_level):
 def drop_all_logs(*args, **kwargs):
     """Drop all logs."""
     raise structlog.DropEvent
+
+
+logger = get_logger(APP_NAME, log_for=LOG_FOR)

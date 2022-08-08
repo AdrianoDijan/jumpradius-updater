@@ -2,11 +2,12 @@ import requests
 from requests.exceptions import JSONDecodeError
 
 from .constants import HTTPMethod
+from .logs import logger
 from .settings import (
+    APP_NAME,
     IFCONFIG_CO_API_BASE,
     JUMPRADIUS_API_BASE,
     JUMPRADIUS_API_KEY,
-    logger,
 )
 
 
@@ -49,7 +50,7 @@ def send_api_request(
         return retval
     except Exception:
         logger.exception(
-            "jumpradius.api_clients.send_api_request",
+            f"{APP_NAME}.api_clients.send_api_request",
             host=base,
             path=path,
             url=url,
@@ -60,7 +61,7 @@ def send_api_request(
         return retval
     finally:
         logger.debug(
-            "jumpradius.api_clients.send_api_request",
+            "{APP_NAME}.api_clients.send_api_request",
             host=base,
             path=path,
             url=url,
