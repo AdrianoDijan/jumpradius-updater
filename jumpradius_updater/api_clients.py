@@ -61,7 +61,7 @@ def send_api_request(
         return retval
     finally:
         logger.debug(
-            "{APP_NAME}.api_clients.send_api_request",
+            f"{APP_NAME}.api_clients.send_api_request",
             host=base,
             path=path,
             url=url,
