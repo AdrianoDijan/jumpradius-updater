@@ -29,13 +29,14 @@ def _get_current_ip() -> str:
 
 def loop():
     """Run updater in daemon mode."""
-    servers = RadiusServer.from_api(
-        filters=ServerFilters(ids=RADIUS_SERVER_IDS, names=RADIUS_SERVER_NAMES)
-        if any((RADIUS_SERVER_IDS, RADIUS_SERVER_NAMES))
-        else None
-    )
-
     while True:
+        servers = RadiusServer.from_api(
+            filters=ServerFilters(
+                ids=RADIUS_SERVER_IDS, names=RADIUS_SERVER_NAMES
+            )
+            if any((RADIUS_SERVER_IDS, RADIUS_SERVER_NAMES))
+            else None
+        )
         for _ in range(SERVERS_REFRESH_MULTIPLIER):
             current_ip = _get_current_ip()
             for server in servers:
