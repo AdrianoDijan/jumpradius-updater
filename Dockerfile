@@ -1,38 +1,22 @@
-FROM python:3.10-slim as python-base
+FROM python:3.13-slim AS python-base
 
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.1.14 \
-    POETRY_HOME="/opt/poetry" \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1 \
-    PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
+ENV PATH="/root/.local/bin/:$PATH"
 
-
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-
-
-FROM python-base as builder-base
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
-        curl build-essential
+        curl ca-certificates
 
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
 
-WORKDIR $PYSETUP_PATH
-COPY poetry.lock pyproject.toml ./
+# Run the installer then remove it
+RUN sh /uv-installer.sh && rm /uv-installer.sh
 
-RUN poetry install --no-dev
+RUN mkdir /app
+WORKDIR /app
+COPY uv.lock pyproject.toml ./
 
-
-FROM python-base
-
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+RUN uv sync --frozen
 
 COPY . /app/
 WORKDIR /app
-CMD ["python3", "-m", "jumpradius_updater"]
+CMD ["uv", "run", "-m", "jumpradius_updater"]

@@ -2,7 +2,7 @@ from time import time
 
 import structlog
 import structlog_pretty
-from structlog.stdlib import _NAME_TO_LEVEL
+from structlog.stdlib import NAME_TO_LEVEL
 
 from .settings import APP_NAME, LOG_FOR
 
@@ -90,10 +90,10 @@ def add_app_name(app_name):
 
 def filter_by_level(log_level):
     """Filter by level."""
-    current_log_level = _NAME_TO_LEVEL.get(log_level, 0)
+    current_log_level = NAME_TO_LEVEL.get(log_level, 0)
 
     def wrapper(_, level, event_dict):
-        if _NAME_TO_LEVEL.get(level, 0) >= current_log_level:
+        if NAME_TO_LEVEL.get(level, 0) >= current_log_level:
             return event_dict
 
         raise structlog.DropEvent

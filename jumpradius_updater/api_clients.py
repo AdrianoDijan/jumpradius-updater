@@ -15,7 +15,7 @@ def send_api_request(
     method: HTTPMethod,
     base: str,
     path: str,
-    headers: dict = None,
+    headers: dict | None = None,
     body: dict | str | None = None,
     json: bool = True,
 ) -> dict | str | list | None:

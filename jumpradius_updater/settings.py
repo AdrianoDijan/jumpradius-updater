@@ -12,6 +12,7 @@ IFCONFIG_CO_API_BASE = env.str(
     "IFCONFIG_CO_API_BASE", default="https://ifconfig.co/"
 )
 
+IP_FILTER_PATTERN = env.str("IP_FILTER_PATTERN", default="")
 IP_REFRESH_RATE_SEC = env.int("IP_REFRESH_RATE_SEC", default=10)
 
 # refresh servers data every x IP refreshes
